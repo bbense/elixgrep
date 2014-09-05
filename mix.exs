@@ -5,9 +5,14 @@ defmodule Elixgrep.Mixfile do
     [app: :elixgrep,
      version: "0.0.1",
      elixir: "~> 0.15.1",
+     escript: escript,
      deps: deps]
   end
 
+
+  def escript do
+    [main_module: Elixgrep]
+  end
   # Configuration for the OTP application
   #
   # Type `mix help compile.app` for more information
@@ -27,4 +32,5 @@ defmodule Elixgrep.Mixfile do
   defp deps do
     []
   end
+  
 end
