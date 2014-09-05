@@ -24,7 +24,7 @@ defmodule Elixgrep do
   end
  
   def process([string,path]) do
-  	fgrep(path,string) |> Enum.map(fn(str) -> IO.puts(str) end )
+  	fgrep(path,string) |> Enum.map(fn(str) -> IO.write(str) end )
   end 
  
   def process(:help) do
