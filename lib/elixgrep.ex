@@ -1,13 +1,21 @@
 defmodule Elixgrep do
 
 	#Search a file for a string
-	def fgrep(path,string) do
-		File.stream!(path) 
+	def fgrep(path,string,chunksize) do
+    File.stream!(path)
+  |>
+		Enum.chunk(chunksize,chunksize,[])
 	|> 
-		Parallel.pmap(fn (line) ->  if( String.contains?(line,string), do: line ) end) 
+		Parallel.pmap(fn (lines) -> lgrep(lines,string) end  ) 
 	|>
-		Enum.filter( fn(x) -> x end )
+		List.flatten
 	end 
+
+  def lgrep(lines,string) do
+      lines
+    |>
+      Enum.filter( fn(line) -> String.contains?(line,string) end) 
+  end 
 
 	def main(args) do
     	args |> parse_args |> process
@@ -24,7 +32,7 @@ defmodule Elixgrep do
   end
  
   def process([string,path]) do
-  	fgrep(path,string) |> Enum.map(fn(str) -> IO.write("#{path}: #{str}") end )
+  	fgrep(path,string,1000) |> Enum.map(fn(str) -> IO.write("#{path}: #{str}") end )
   end 
 
   def process([head | tail]) do 
