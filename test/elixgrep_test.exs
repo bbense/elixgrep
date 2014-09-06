@@ -1,7 +1,9 @@
 defmodule ElixgrepTest do
   use ExUnit.Case
 
-  test "the truth" do
-    assert 1 + 1 == 2
-  end
+  test "Elixgrep.fgrep" do
+  	assert Elixgrep.fgrep("README.md","Elix") == ["Elixgrep\n"]
+  end 
+  
+  
 end
