@@ -1,5 +1,7 @@
 defmodule Elixgrep do
 
+  @default_chunksize 1000
+
 	#Search a file for a string
 	def fgrep(path,string,chunksize) do
     File.stream!(path)
@@ -22,21 +24,22 @@ defmodule Elixgrep do
   end
  
   def parse_args(args) do
-    options = OptionParser.parse(args, switches: [help: :boolean],
-                                      aliases: [h: :help])
+    options = OptionParser.parse(args, switches: [help: :boolean , chunksize: :integer],
+                                      aliases: [h: :help, c: :chunksize])
     case options do
-      { [ help: true], _, _}      -> :help
-      { _, args, _ }              -> args
-      _                           -> :help
+      { [ help: true], _, _}            -> :help
+      { [chunksize: count], args, _ }   -> { count, args }
+      { [], args, _ }                   -> { @default_chunksize, args }
+      _                                 -> :help
     end
   end
  
-  def process([string,path]) do
+  def process({chunksize,[string,path]}) do
   	fgrep(path,string,1000) |> Enum.map(fn(str) -> IO.write("#{path}: #{str}") end )
   end 
 
-  def process([head | tail]) do 
-     tail |> Parallel.pmap( fn (path) -> process([head,path]) end)
+  def process({chunksize,[head | tail]}) do 
+     tail |> Parallel.pmap( fn (path) -> process({chunksize,[head,path]}) end)
   end 
  
   def process(:help) do

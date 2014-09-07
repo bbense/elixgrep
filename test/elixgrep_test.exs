@@ -9,5 +9,12 @@ defmodule ElixgrepTest do
   	assert Elixgrep.fgrep("README.md","Elix",200) == ["Elixgrep\n"]
   end 
   
+	test "chunksize is set to default w/o -c" do
+		assert Elixgrep.parse_args(["fred", "/tmp/bar", "/tmp/foo"]) == { 1000, ["fred","/tmp/bar","/tmp/foo"] }
+	end
+	
+	test "chunksize is with -c" do
+		assert Elixgrep.parse_args(["--chunksize","10000","fred", "/tmp/bar", "/tmp/foo"]) == { 10000, ["fred","/tmp/bar","/tmp/foo"] }
+	end
 
 end
