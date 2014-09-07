@@ -5,7 +5,7 @@ defmodule ElixgrepTest do
   	assert Elixgrep.fgrep("README.md","Elix",2) == ["Elixgrep\n"]
   end 
   
-   test "Elixgrep.fgrep works with chunksize larger than file" do
+  test "Elixgrep.fgrep works with chunksize larger than file" do
   	assert Elixgrep.fgrep("README.md","Elix",200) == ["Elixgrep\n"]
   end 
   
@@ -18,6 +18,11 @@ defmodule ElixgrepTest do
 	end
   
   test "build_paths returns correct values" do
-  	assert Elixgrep.build_paths({1000,["fred","./test"]}) == {1000,["fred","./test/dirtree_test.exs","./test/elixgrep_test.exs","./test/test_helper.exs"]}
+  	{count,[ target | files ] } = Elixgrep.build_paths({1000,["fred","./test"]}) 
+  	assert count == 1000
+  	assert target == "fred"
+  	tfiles = ["./test/test_helper.exs", "./test/elixgrep_test.exs","./test/dirtree_test.exs"]
+  	assert Enum.sort(tfiles) == Enum.sort(files)
   end 
+
 end
