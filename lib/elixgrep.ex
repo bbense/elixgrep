@@ -1,5 +1,18 @@
 defmodule Elixgrep do
 
+  @module_doc """
+      Usage:
+        exilgrep [string] [file]
+ 
+      Options:
+        -h, [--help]                # Show this help message and quit.
+        -c, [--chunksize] linecount # Number of lines to search per process.
+ 
+      Description:
+        Prints all the lines in file containing string
+    """
+
+
   @default_chunksize 1000
 
 	#Search a file for a string
@@ -43,16 +56,7 @@ defmodule Elixgrep do
   end 
  
   def process(:help) do
-    IO.puts """
-      Usage:
-        exilgrep [string] [file]
- 
-      Options:
-        -h, [--help]      # Show this help message and quit.
- 
-      Description:
-        Prints all the lines in file containing string
-    """
+    IO.puts @module_doc
     System.halt(0)
   end
 
