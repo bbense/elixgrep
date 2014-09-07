@@ -12,4 +12,10 @@ defmodule DirTreeTest do
     assert DirTree.dirs(path) == ["/tmp"]
   end
 
+  test "DirTree.expand returns files in subdir" do
+  	path = ["./test","README.md"]
+  	ex_path = ["./test/dirtree_test.exs","./test/elixgrep_test.exs","./test/test_helper.exs","README.md"]
+    assert Enum.sort(DirTree.expand(path)) == ex_path
+  end
+
 end

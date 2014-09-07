@@ -33,7 +33,7 @@ defmodule Elixgrep do
   end 
 
 	def main(args) do
-    	args |> parse_args |> process
+    	args |> parse_args |> build_paths |> process
   end
  
   def parse_args(args) do
@@ -46,9 +46,13 @@ defmodule Elixgrep do
       _                                 -> :help
     end
   end
+
+  def build_paths({chunksize,[head | tail]}) do
+    {chunksize,Enum.concat([ head ] ,DirTree.expand(tail))}
+  end 
  
   def process({chunksize,[string,path]}) do
-  	fgrep(path,string,1000) |> Enum.map(fn(str) -> IO.write("#{path}: #{str}") end )
+  	fgrep(path,string,chunksize) |> Enum.map(fn(str) -> IO.write("#{path}: #{str}") end )
   end 
 
   def process({chunksize,[head | tail]}) do 
