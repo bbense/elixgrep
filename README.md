@@ -13,7 +13,7 @@ Usage
 =======
 ```
    Usage:
-        exilgrep [string] [file]
+        exilgrep [string] [files and/or directories]
  
       Options:
         -h, [--help]                # Show this help message and quit.
@@ -31,4 +31,4 @@ Run `mix escript.build` to create the elixgrep executable.
 To Do
 =====
 
-Currently running into file descriptor limits for large code trees.  
+Add option for file descriptor limit. Currently fixed at 512. 

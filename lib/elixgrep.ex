@@ -2,7 +2,7 @@ defmodule Elixgrep do
 
   @module_doc """
       Usage:
-        exilgrep [string] [file]
+        exilgrep [string] [files and/or directories]
  
       Options:
         -h, [--help]                # Show this help message and quit.
@@ -14,6 +14,7 @@ defmodule Elixgrep do
 
 
   @default_chunksize 1000
+  @max_ofiles 512
 
 	#Search a file for a string
 	def fgrep(path,string,chunksize) do
@@ -21,7 +22,7 @@ defmodule Elixgrep do
   |>
 		Enum.chunk(chunksize,chunksize,[])
 	|> 
-		Parallel.pmap(fn (lines) -> lgrep(lines,string) end  ) 
+		Parallel.pmap(fn(lines) -> lgrep(lines,string) end  ) 
 	|>
 		List.flatten
 	end 
@@ -56,7 +57,11 @@ defmodule Elixgrep do
   end 
 
   def process({chunksize,[head | tail]}) do 
-     tail |> Parallel.pmap( fn (path) -> process({chunksize,[head,path]}) end)
+     tail
+    |> 
+      Enum.chunk(@max_ofiles,@max_ofiles,[])
+    |>
+      Enum.map(fn(filelist) -> Parallel.pmap(filelist, fn(path) -> process({chunksize,[head,path]}) end ) end )
   end 
  
   def process(:help) do
