@@ -20,7 +20,7 @@ defmodule Elixgrep do
 	def fgrep(path,string,chunksize) do
     File.stream!(path)
   |>
-		Enum.chunk(chunksize,chunksize,[])
+		Stream.chunk(chunksize,chunksize,[])
 	|> 
 		Parallel.pmap(fn(lines) -> lgrep(lines,string) end  ) 
 	|>

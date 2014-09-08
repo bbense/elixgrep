@@ -32,3 +32,5 @@ To Do
 =====
 
 Add option for file descriptor limit. Currently fixed at 512. 
+
+Add option for "run elixir function on every file/or file chunk"

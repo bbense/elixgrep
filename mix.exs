@@ -4,7 +4,7 @@ defmodule Elixgrep.Mixfile do
   def project do
     [app: :elixgrep,
      version: "0.0.1",
-     elixir: "~> 0.15.1",
+     elixir: "> 0.15.1",
      escript: escript,
      deps: deps]
   end
