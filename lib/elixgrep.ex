@@ -9,7 +9,14 @@ defmodule Elixgrep do
         -c, [--chunksize] linecount # Number of lines to search per process.
  
       Description:
-        Prints all the lines in file containing string
+        
+        Runs a version of map/reduce on the file list given on the command
+        line. Requires an elixir module that implements two functions. 
+
+        gr_map(path,Enum) -> {path,[]}
+        gr_reduce() Expects to recieve two kinds of messages 
+                    { item: { path, []}}
+                    { finalize: } -> Should output results and exit.
     """
 
 
