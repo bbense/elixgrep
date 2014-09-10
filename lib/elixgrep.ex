@@ -32,15 +32,14 @@ defmodule Elixgrep do
 # |> Stream.run
 
 	#Search a file for a string
-	def fgrep(path,string,chunksize) do
+ def fgrep(path,string,_chunksize) do
     File.stream!(path)
-  |>
-		Stream.chunk(chunksize,chunksize,[])
-	|> 
-		Parallel.pmap(fn(lines) -> lgrep(lines,string) end  ) 
-	|>
-		List.flatten
-	end 
+   |>
+    Stream.filter(fn(line) -> String.contains?(line,string) end )
+   |> 
+    Enum.map( fn(x) -> x end )
+   
+  end 
 
   def lgrep(lines,string) do
       lines
