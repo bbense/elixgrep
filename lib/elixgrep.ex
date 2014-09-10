@@ -13,8 +13,8 @@ defmodule Elixgrep do
         Runs a version of map/reduce on the file list given on the command
         line. Requires an elixir module that implements two functions. 
 
-        gr_map(path,Enum) -> {path,[]}
-        gr_reduce() Expects to recieve two kinds of messages 
+        gr_map(options,path,Enum) -> {path,[]}
+        gr_reduce(options) Expects to recieve two kinds of messages 
                     { item: { path, []}}
                     { finalize: } -> Should output results and exit.
     """
@@ -22,6 +22,14 @@ defmodule Elixgrep do
 
   @default_chunksize 1000
   @max_ofiles 512
+
+
+# Open up a file, replace all # by % and stream to another file without loading the whole file in memory:
+
+# stream = File.stream!("code")
+# |> Stream.map(&String.replace(&1, "#", "%"))
+# |> Stream.into(File.stream!("new"))
+# |> Stream.run
 
 	#Search a file for a string
 	def fgrep(path,string,chunksize) do
