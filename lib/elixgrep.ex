@@ -23,16 +23,30 @@ defmodule Elixgrep do
   @default_chunksize 1000
   @max_ofiles 512
 
+  def gr_reduce(options) do 
+        receive do
+          { :item, path, results } ->  
+              results 
+            |>
+              Enum.map(fn(str) -> IO.write("#{path}: #{str}") end )
+            gr_reduce(options)
 
-# Open up a file, replace all # by % and stream to another file without loading the whole file in memory:
+          { :finalize } -> 
+            exit(:normal)
 
-# stream = File.stream!("code")
-# |> Stream.map(&String.replace(&1, "#", "%"))
-# |> Stream.into(File.stream!("new"))
-# |> Stream.run
+        end 
+  end 
 
-	#Search a file for a string
- def fgrep(path,string,_chunksize) do
+  def gr_map(options,_path,path_stream) do
+    %{ search: string } = options 
+      path_stream 
+    |>
+      Stream.filter(fn(line) -> String.contains?(line,string) end )
+    |> 
+      Enum.map( fn(x) -> x end )
+  end 
+
+  def fgrep(path,string,_chunksize) do
     File.stream!(path)
    |>
     Stream.filter(fn(line) -> String.contains?(line,string) end )
