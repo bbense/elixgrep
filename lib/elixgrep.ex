@@ -6,7 +6,7 @@ defmodule Elixgrep do
  
       Options:
         -h, [--help]                # Show this help message and quit.
-        -c, [--chunksize] linecount # Number of lines to search per process.
+        -c, [--count] filecount     # Number of files to process in parallel
  
       Description:
         
@@ -19,19 +19,16 @@ defmodule Elixgrep do
                     { finalize: } -> Should output results and exit.
     """
 
-
-  @default_chunksize 1000
   @max_ofiles 512
 
   def gr_reduce(options) do 
         receive do
           { :item, path, results } ->  
-              results 
-            |>
-              Enum.map(fn(str) -> IO.write("#{path}: #{str}") end )
+            results |> Enum.map(fn(str) -> IO.write("#{path}: #{str}") end )
             gr_reduce(options)
 
           { :finalize } -> 
+            IO.puts("\nAll done boss\n")
             exit(:normal)
 
         end 
@@ -46,6 +43,11 @@ defmodule Elixgrep do
       Enum.map( fn(x) -> x end )
   end 
 
+  def start_reduce(options) do
+    spawn_link(fn -> options.reduce_func.(options) end)
+  end
+
+
   def fgrep(path,string,_chunksize) do
     File.stream!(path)
    |>
@@ -55,41 +57,46 @@ defmodule Elixgrep do
    
   end 
 
-  def lgrep(lines,string) do
-      lines
-    |>
-      Enum.filter( fn(line) -> String.contains?(line,string) end) 
-  end 
-
 	def main(args) do
-    	args |> parse_args |> build_paths |> process
+    	args |> parse_args |> build_paths |> background |> process
   end
  
   def parse_args(args) do
-    options = OptionParser.parse(args, switches: [help: :boolean , chunksize: :integer],
-                                      aliases: [h: :help, c: :chunksize])
-    case options do
-      { [ help: true], _, _}            -> :help
-      { [chunksize: count], args, _ }   -> { count, args }
-      { [], args, _ }                   -> { @default_chunksize, args }
-      _                                 -> :help
+    options = %{ :count => @max_ofiles ,
+                 :map_func => fn(opt,path,strm) -> gr_map(opt,path,strm) end ,
+                 :reduce_func => fn(opt) -> gr_reduce(opt) end }
+    cmd_opts = OptionParser.parse(args, switches: [help: :boolean , count: :integer],
+                                      aliases: [h: :help, c: :count])
+    case cmd_opts do
+      { [ help: true], _, _}          -> :help
+      { [count: count], args, _ }     -> { Map.put(options,:count,count), args }
+      { [], args, _ }                 -> { options, args }
+      _                               -> :help
     end
   end
 
-  def build_paths({chunksize,[head | tail]}) do
-    {chunksize,Enum.concat([ head ] ,DirTree.expand(tail))}
-  end 
- 
-  def process({chunksize,[string,path]}) do
-  	fgrep(path,string,chunksize) |> Enum.map(fn(str) -> IO.write("#{path}: #{str}") end )
+  def build_paths({options,[head | tail]}) do  
+    {options,Enum.concat([ head ] ,DirTree.expand(tail))}
   end 
 
-  def process({chunksize,[head | tail]}) do 
+  def background({options,args}) do 
+    pid = start_reduce(options)
+    next_opt = options |> Map.put(:reduce_pid,pid)
+    {next_opt,args}
+  end
+ 
+  def process({options,[string,path]}) do
+    next_opts = options |> Map.put(:search,string)
+    send options.reduce_pid, { :item,path,next_opts.map_func.(next_opts,path,File.stream!(path)) }
+  end 
+
+  def process({options,[head | tail]}) do 
      tail
     |> 
-      Enum.chunk(@max_ofiles,@max_ofiles,[])
+      Enum.chunk(options.count,options.count,[])
     |>
-      Enum.map(fn(filelist) -> Parallel.pmap(filelist, fn(path) -> process({chunksize,[head,path]}) end ) end )
+      Enum.map(fn(filelist) -> Parallel.pmap(filelist, fn(path) -> process({options,[head,path]}) end ) end )
+     send options.reduce_pid, { :finalize }
   end 
  
   def process(:help) do
