@@ -17,7 +17,7 @@ Usage
  
       Options:
         -h, [--help]                # Show this help message and quit.
-        -c, [--chunksize] linecount # Number of lines to search per process.
+        -c, [--count] filecount     # Number of lines to search in parallel.
  
       Description:
         Prints all the lines in file containing string
@@ -31,6 +31,5 @@ Run `mix escript.build` to create the elixgrep executable.
 To Do
 =====
 
-Add option for file descriptor limit. Currently fixed at 512. 
-
-Add option for "run elixir function on every file/or file chunk"
+Have basic map/reduce setup going, next step is to figure out how to
+load functions at runtime. 
