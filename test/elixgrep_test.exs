@@ -1,26 +1,25 @@
 defmodule ElixgrepTest do
   use ExUnit.Case
   #import ExUnit.CaptureIO  
-
-  
-	test "count is set to default w/o -c" do
-		{opts,args} = Elixgrep.parse_args(["fred", "/tmp/bar", "/tmp/foo"]) 
+ 
+  test "count is set to default w/o -c" do
+    {opts,args} = Elixgrep.parse_args(["fred", "/tmp/bar", "/tmp/foo"]) 
     assert opts.count ==  512
     assert args == ["fred","/tmp/bar","/tmp/foo"] 
-	end
-	
-	test "count is set with -c" do
-		{opts,args} = Elixgrep.parse_args(["--count","10000","fred", "/tmp/bar", "/tmp/foo"]) 
+  end
+  
+  test "count is set with -c" do
+    {opts,args} = Elixgrep.parse_args(["--count","10000","fred", "/tmp/bar", "/tmp/foo"]) 
     assert opts.count ==  10000
     assert args == ["fred","/tmp/bar","/tmp/foo"] 
-	end
+  end
   
   test "build_paths returns correct values" do
-  	{options,[ target | files ] } = Elixgrep.build_paths({%{:count => 1000},["fred","./test"]}) 
-  	assert options.count == 1000
-  	assert target == "fred"
-  	tfiles = ["./test/test_helper.exs", "./test/elixgrep_test.exs","./test/dirtree_test.exs"]
-  	assert Enum.sort(tfiles) == Enum.sort(files)
+    {options,[ target | files ] } = Elixgrep.build_paths({%{:count => 1000},["fred","./test"]}) 
+    assert options.count == 1000
+    assert target == "fred"
+    tfiles = ["./test/test_helper.exs", "./test/elixgrep_test.exs","./test/dirtree_test.exs"]
+    assert Enum.sort(tfiles) == Enum.sort(files)
   end 
 
   test "Eligrep.gr_map works" do
