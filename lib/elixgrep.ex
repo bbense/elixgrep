@@ -57,8 +57,8 @@ defmodule Elixgrep do
    
   end 
 
-	def main(args) do
-    	args |> parse_args |> build_paths |> background |> process
+  def main(args) do
+      args |> parse_args |> build_paths |> background |> process
   end
  
   def parse_args(args) do
