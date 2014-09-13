@@ -1,8 +1,4 @@
 
-
-# The idea is to read a file into a stream and spawn a process for each line in the file to 
-# search for a string. 
-
 defmodule Parallel do
   def pmap(collection, fun) do
     me = self
