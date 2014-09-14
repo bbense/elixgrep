@@ -18,14 +18,17 @@ defmodule DirTree do
   def expand(path_list) do
     myfiles = files(path_list)
     mydirs = dirs(path_list)
-    Enum.map(mydirs, fn(dir) -> entries(dir) end )
-    |>
-    List.flatten
+      Enum.flat_map(mydirs, fn(dir) -> entries(dir) end )
     |> 
       expand
     |>
       Enum.concat(myfiles)
   end 
 
+  # Not needed for exilgrep, but would be useful. 
+  # Just replace all Enums above with streams?
+  # def stream(dir)
+  #
+  # end 
 
 end
