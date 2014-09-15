@@ -135,7 +135,11 @@ defmodule Elixgrep do
   end 
 
   def load_plugin(options) do
-    options
+    Plugin.load(options.plugin)
+    new_opts = options = %{ 
+                 :map_func => fn(opt,path) -> ElixgrepPlugin.gr_map(opt,path) end ,
+                 :reduce_func => fn(opt) -> ElixgrepPlugin.gr_reduce(opt) end }
+    Map.merge(options,new_opts)
   end
 
 end
