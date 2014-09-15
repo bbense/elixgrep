@@ -1,7 +1,15 @@
 defmodule ElixgrepTest do
   use ExUnit.Case
   #import ExUnit.CaptureIO  
- 
+  
+  # Does weird things. Seems to swallow any output errors.
+  # test "-h returns module_doc" do 
+  #   assert capture_io( fn ->
+  #      Elixgrep.main(["-h"])
+  #    end 
+  #     ) == "Usage:"
+  # end 
+
   test "count is set to default w/o -c" do
     {opts,args} = Elixgrep.parse_args(["fred", "/tmp/bar", "/tmp/foo"]) 
     assert opts.count ==  512
@@ -22,13 +30,18 @@ defmodule ElixgrepTest do
     assert Enum.sort(tfiles) == Enum.sort(files)
   end 
 
+  test "rehabilitate_args returns an option map" do 
+    bad_args = [{"-p", "people"}, {"-v", nil},{"--type","bad"}]
+    good_opts = [p: "people", v: true, type: "bad"]
+    assert good_opts == Elixgrep.rehabilitate_args(bad_args)
+  end 
+
   test "Eligrep.gr_map works" do
     opts = %{ search: "Elix"}
     path = "README.md"
-    path_stream = File.stream!(path)
-    assert Elixgrep.gr_map(opts,path,path_stream) == ["Elixgrep\n"]
+    assert Elixgrep.gr_map(opts,path) == ["Elixgrep\n"]
   end 
-
+  
   # Tried 80 different ways to get this test to actually run.
   # Clearly there is something here I don't understand. 
   # test "Elixgrep.gr_reduce prints strings" do

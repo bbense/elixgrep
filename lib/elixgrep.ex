@@ -13,7 +13,7 @@ defmodule Elixgrep do
         Runs a version of map/reduce on the file list given on the command
         line. Requires an elixir module that implements two functions. 
 
-        gr_map(options,path,Enum) -> {path,[]}
+        gr_map(options,path) -> {path,[]}
         gr_reduce(options) Expects to recieve two kinds of messages 
                     { item: { path, []}}
                     { finalize: } -> Should output results and exit.
@@ -34,9 +34,9 @@ defmodule Elixgrep do
         end 
   end 
 
-  def gr_map(options,_path,path_stream) do
+  def gr_map(options,path) do
     %{ search: string } = options 
-      path_stream 
+      File.stream!(path)
     |>
       Stream.filter(fn(line) -> String.contains?(line,string) end )
     |> 
@@ -47,47 +47,64 @@ defmodule Elixgrep do
     spawn_link(fn -> options.reduce_func.(options) end)
   end
 
-
-  def fgrep(path,string,_chunksize) do
-    File.stream!(path)
-   |>
-    Stream.filter(fn(line) -> String.contains?(line,string) end )
-   |> 
-    Enum.map( fn(x) -> x end )
-   
-  end 
-
   def main(args) do
       args |> parse_args |> build_paths |> background |> process
   end
- 
+  
+  def merge_opts(opts,bad_opts) do
+    bad_opts |>  rehabilitate_args |> Keyword.merge(opts)
+  end 
+
   def parse_args(args) do
     options = %{ :count => @max_ofiles ,
-                 :map_func => fn(opt,path,strm) -> gr_map(opt,path,strm) end ,
+                 :map_func => fn(opt,path) -> gr_map(opt,path) end ,
                  :reduce_func => fn(opt) -> gr_reduce(opt) end }
-    cmd_opts = OptionParser.parse(args, switches: [help: :boolean , count: :integer],
-                                      aliases: [h: :help, c: :count])
+
+    cmd_opts = OptionParser.parse(args, 
+                                  switches: [help: :boolean , count: :integer, plugin: :string],
+                                  aliases: [h: :help, c: :count, p: :plugin])
+
     case cmd_opts do
-      { [ help: true], _, _}          -> :help
-      { [count: count], args, _ }     -> { Map.put(options,:count,count), args }
-      { [], args, _ }                 -> { options, args }
-      _                               -> :help
+      { [ help: true], _, _}   -> :help
+      { [], args, [] }         -> { options, args }
+      { opts, args, [] }       -> { Enum.into(opts,options), args }
+      { opts, args, bad_opts}  -> { Enum.into(merge_opts(opts,bad_opts),options), args}
+      _                        -> :help
     end
+  end
+
+  def rehabilitate_args(bad_args) do
+      bad_args 
+     |> 
+      Enum.flat_map(fn(x) -> Tuple.to_list(x) end)
+     |> 
+      Enum.filter_map(fn(str) -> str end, fn(str) -> String.replace(str, ~r/^\-([^-]+)/, "--\\1") end )
+     |>
+      OptionParser.parse
+     |> 
+      Tuple.to_list
+     |>
+      List.first
   end
 
   def build_paths({options,[head | tail]}) do  
     {options,Enum.concat([ head ] ,DirTree.expand(tail))}
   end 
+  
+  def build_paths(:help) do
+    IO.puts @module_doc
+    System.halt(0)
+  end
 
   def background({options,args}) do 
-    pid = start_reduce(options)
-    next_opt = options |> Map.put(:reduce_pid,pid)
-    {next_opt,args}
+    if(Map.has_key?(options,:plugin), do: next_opt = load_plugin(options), else: next_opt = options)
+    pid = start_reduce(next_opt)
+    {next_opt |> Map.put(:reduce_pid,pid), args }
   end
  
   def process({options,[string,path]}) do
     next_opts = options |> Map.put(:search,string)
-    send options.reduce_pid, { :item,path,next_opts.map_func.(next_opts,path,File.stream!(path)) }
+    send options.reduce_pid, { :item,path,next_opts.map_func.(next_opts,path) }
   end 
 
   def process({options,[head | tail]}) do 
@@ -96,12 +113,11 @@ defmodule Elixgrep do
       Enum.chunk(options.count,options.count,[])
     |>
       Enum.map(fn(filelist) -> Parallel.pmap(filelist, fn(path) -> process({options,[head,path]}) end ) end )
-     send options.reduce_pid, { :finalize }
+    send options.reduce_pid, { :finalize }
   end 
- 
-  def process(:help) do
-    IO.puts @module_doc
-    System.halt(0)
+
+  def load_plugin(options) do
+    options
   end
 
 end
