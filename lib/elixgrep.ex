@@ -28,7 +28,7 @@ defmodule Elixgrep do
             gr_reduce(options)
 
           { :finalize } -> 
-            IO.puts("\nAll done boss\n")
+            send options.master_pid, { :all_done_boss }
             exit(:normal)
 
         end 
@@ -48,7 +48,7 @@ defmodule Elixgrep do
   end
 
   def main(args) do
-      args |> parse_args |> build_paths |> background |> process
+      args |> parse_args |> build_paths |> background |> process |> cleanup
   end
   
   def merge_opts(opts,bad_opts) do
@@ -98,13 +98,15 @@ defmodule Elixgrep do
 
   def background({options,args}) do 
     if(Map.has_key?(options,:plugin), do: next_opt = load_plugin(options), else: next_opt = options)
-    pid = start_reduce(next_opt)
+    reduce_opts = Map.put(next_opt,:master_pid,self()) 
+    pid = start_reduce(reduce_opts)
     {next_opt |> Map.put(:reduce_pid,pid), args }
   end
  
   def process({options,[string,path]}) do
     next_opts = options |> Map.put(:search,string)
     send options.reduce_pid, { :item,path,next_opts.map_func.(next_opts,path) }
+    options
   end 
 
   def process({options,[head | tail]}) do 
@@ -114,6 +116,22 @@ defmodule Elixgrep do
     |>
       Enum.map(fn(filelist) -> Parallel.pmap(filelist, fn(path) -> process({options,[head,path]}) end ) end )
     send options.reduce_pid, { :finalize }
+  end 
+  
+  def cleanup({ :finalize }) do 
+    receive do
+      { :all_done_boss } -> 
+        System.halt(0)
+    end 
+  end 
+
+  # We really need the options in this version.
+  def cleanup(options) do
+    send options.reduce_pid, { :finalize }
+    receive do 
+       { :all_done_boss } -> 
+        System.halt(0)
+    end 
   end 
 
   def load_plugin(options) do
