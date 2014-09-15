@@ -7,6 +7,7 @@ defmodule Plugin do
 
   def load(plugin) do
     path = search_path(plugin)
+    unless( path, do: raise "#{plugin} not found")
     Code.require_file(path) 
   end
  

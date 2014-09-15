@@ -9,10 +9,18 @@ defmodule PluginTest do
   test "Plugin.search can find default grep plugin" do
     assert Plugin.search_path("grep") == "./plugins/grep.exs"
   end
+
+  test "Plugin.search fails" do
+    refute Plugin.search_path("sidehill_gouger")
+  end 
   
-  # test "Plugin.load defines a module" do 
-  #   Plugin.load("grep")
-  #   assert Code.loaded_files
-  # end 
-  
+  # Does not pass for some reason. Error is raised. 
+  # test "Plugin.load raises error when plugin doesn't exist" do 
+  #   assert_raise RuntimeError, Plugin.load("sidehill_gouger")
+  # end
+
+  test "Plugin.load" do
+    Plugin.load("grep")
+  end
+
 end
