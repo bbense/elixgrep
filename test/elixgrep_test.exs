@@ -20,6 +20,12 @@ defmodule ElixgrepTest do
     {opts,args} = Elixgrep.parse_args(["--count","10000","fred", "/tmp/bar", "/tmp/foo"]) 
     assert opts.count ==  10000
     assert args == ["fred","/tmp/bar","/tmp/foo"] 
+  end 
+
+  test "Custom args are parsed correctly" do
+    {opts,args} = Elixgrep.parse_args(["-a","atime","fred", "/tmp/bar", "/tmp/foo"]) 
+    assert opts.a ==  "atime"
+    assert args == ["fred","/tmp/bar","/tmp/foo"] 
   end
   
   test "build_paths returns correct values" do
