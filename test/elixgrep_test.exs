@@ -32,7 +32,7 @@ defmodule ElixgrepTest do
     {options,[ target | files ] } = Elixgrep.build_paths({%{:count => 1000},["fred","./test"]}) 
     assert options.count == 1000
     assert target == "fred"
-    tfiles = ["./test/test_helper.exs", "./test/elixgrep_test.exs","./test/dirtree_test.exs"]
+    tfiles = ["./test/test_helper.exs", "./test/elixgrep_test.exs","./test/plugin_test.exs","./test/dirtree_test.exs"]
     assert Enum.sort(tfiles) == Enum.sort(files)
   end 
 
