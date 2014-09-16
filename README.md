@@ -24,7 +24,9 @@ Usage
       Options:
         -h, [--help]                # Show this help message and quit.
         -c, [--count] filecount     # Number of files to search in parallel.
-        -p, [--plugin] elixir_code  # Basename of a plugin to implement other functions. 
+                                    # Default is 512.
+        -p, [--plugin] elixir_code  # Basename of a plugin to implement 
+                                    # other functions. 
  
       Description:
         Prints all the lines in file containing string ( default) 
@@ -43,7 +45,16 @@ Build
 
 Run `mix escript.build` to create the elixgrep executable. 
 
+WARNING
+========
+
+This program can easily drive the load on your machine to the number of availiable cores
+if you point it at a large enough set of files. If you do decide to use it on a production
+server, use the count option to limit it's use of resources.
+
 To Do
 =====
 
 Expand plugins to implement a basic find, tripwire, access monitoring, etc.. 
+
+Work on creating a plugin path discovery mechanism. 
