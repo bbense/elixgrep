@@ -14,6 +14,7 @@ defmodule ElixgrepPlugin do
             gr_reduce(options)
 
           { :finalize } -> 
+            IO.puts("Singing off from grep plugin")
             send options.master_pid, { :all_done_boss }
             exit(:normal)
 
