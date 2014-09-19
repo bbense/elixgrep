@@ -59,7 +59,8 @@ defmodule ElixgrepPlugin do
 
   def match_name(options,path) do
     %{ search: string } = options 
-
+    re = Regex.compile!(string)
+    Regex.match?(re,Path.basename(path))
   end 
 
   def compare_time(judge,options,path) do

@@ -48,5 +48,12 @@ defmodule FindPluginTest do
    assert ["around"] == ElixgrepPlugin.gr_map(options,path)
   end
 
+  test "ElixgrepPlugin.gr_map can search names via regexp" do
+   options = %{ search: "file.*"  }
+   path = "./test_data/file2"
+   assert ["file.*"] == ElixgrepPlugin.gr_map(options,path)
+  end
+
+  
  
 end
