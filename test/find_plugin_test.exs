@@ -18,16 +18,34 @@ defmodule FindPluginTest do
   
   # This should really be two nested enums on ["mtime","ctime","atime"]
   # and ["newer","older","around"]
-  test "ElixgrepPlugin.gr_map can use newer mtime on two files " do
+  test "ElixgrepPlugin.gr_map newer mtime fails when target older" do
    options = %{ search: "newer" , mtime: "./test_data/file1" }
    path = "./test_data/file2"
+   assert [] == ElixgrepPlugin.gr_map(options,path)
+  end
+
+  test "ElixgrepPlugin.gr_map newer mtime succedes when target newer" do
+   options = %{ search: "newer" , mtime: "./test_data/file2" }
+   path = "./test_data/file1"
    assert ["newer"] == ElixgrepPlugin.gr_map(options,path)
   end
 
-  test "ElixgrepPlugin.gr_map can use newer ctime on two files " do
-   options = %{ search: "newer" , ctime: "./test_data/file1" }
+  test "ElixgrepPlugin.gr_map older mtime succedes when target older" do
+   options = %{ search: "older" , mtime: "./test_data/file1" }
    path = "./test_data/file2"
-   assert ["newer"] == ElixgrepPlugin.gr_map(options,path)
+   assert ["older"] == ElixgrepPlugin.gr_map(options,path)
+  end
+
+  test "ElixgrepPlugin.gr_map older time fails when target older" do
+   options = %{ search: "older" , mtime: "./test_data/file2" }
+   path = "./test_data/file1"
+   assert [] == ElixgrepPlugin.gr_map(options,path)
+  end
+
+  test "ElixgrepPlugin.gr_map around mtime succedes when target older" do
+   options = %{ search: "around" , mtime: "./test_data/file1" }
+   path = "./test_data/file2"
+   assert ["around"] == ElixgrepPlugin.gr_map(options,path)
   end
 
  

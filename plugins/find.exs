@@ -29,11 +29,11 @@ defmodule ElixgrepPlugin do
   def gr_reduce(options) do 
         receive do
           { :item, path, results } ->  
-            results |> Enum.map(fn(str) -> IO.write("#{path}: #{str}") end )
+            results |> Enum.map(fn(str) -> IO.puts("#{path}: #{str}") end )
             gr_reduce(options)
 
           { :finalize } -> 
-            IO.puts("Singing off from grep plugin")
+            IO.puts("Signing off from find plugin")
             send options.master_pid, { :all_done_boss }
             exit(:normal)
 
@@ -49,11 +49,9 @@ defmodule ElixgrepPlugin do
     %{ search: string } = options 
     
     case string do 
-      "older"  -> compare_time(fn(a,b) -> a < b end,options,path)
-      "newer"  -> compare_time(fn(a,b) -> a > b end,options,path)
-      "around" -> 
-                  next_opts = Map.put_new(options,:delta,@default_delta)
-                  compare_time(fn(a,b) -> around(next_opts,a,b) end,options,path)
+      "older"  -> compare_time(fn(a,b) -> a > b end,options,path)
+      "newer"  -> compare_time(fn(a,b) -> a < b end,options,path)
+      "around" -> compare_time(fn(a,b) -> around(options,a,b) end,options,path)
       _        -> match_name(options,path)
     end 
     |> if( do: [string], else: [] )
@@ -75,8 +73,11 @@ defmodule ElixgrepPlugin do
   end 
 
   def around(options,a,b) do 
-    %{ delta: interval } = options
-    if(abs(a - b) < interval , do: true , else: false )
+    case options do 
+      %{ delta: interval } -> value = String.to_integer(interval)
+      _                    -> value = @default_delta
+    end 
+    if(abs(a - b) < value , do: true , else: false )
   end 
 
   def file_time(path,time_value) do
