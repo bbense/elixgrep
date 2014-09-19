@@ -1,5 +1,5 @@
 defmodule DirTreeTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   
   test "DirTree.files returns files" do

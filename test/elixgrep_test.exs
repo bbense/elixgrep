@@ -1,5 +1,5 @@
 defmodule ElixgrepTest do
-  use ExUnit.Case
+  use ExUnit.Case , async: true
   #import ExUnit.CaptureIO  
   
   # Does weird things. Seems to swallow any output errors.

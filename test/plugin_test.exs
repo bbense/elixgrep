@@ -1,5 +1,5 @@
 defmodule PluginTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   
   test "Plugin.get_paths returns a list of dirs" do
