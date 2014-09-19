@@ -3,18 +3,18 @@ defmodule DirTreeTest do
 
   
   test "DirTree.files returns files" do
-    path = ["/tmp","README.md"]
+    path = ["./test_data","README.md"]
     assert DirTree.files(path) == ["README.md"]
   end
 
   test "DirTree.dirs returns dirs" do
-    path = ["/tmp","README.md"]
-    assert DirTree.dirs(path) == ["/tmp"]
+    path = ["./test_data","README.md"]
+    assert DirTree.dirs(path) == ["./test_data"]
   end
 
   test "DirTree.expand returns files in subdir" do
-    path = ["./test","README.md"]
-    ex_path = ["./test/dirtree_test.exs","./test/elixgrep_test.exs","./test/plugin_test.exs","./test/test_helper.exs","README.md"]
+    path = ["./test_data","README.md"]
+    ex_path = ["./test_data/file1","./test_data/file2","./test_data/subdir/file3","README.md"]
     assert Enum.sort(DirTree.expand(path)) == ex_path
   end
 

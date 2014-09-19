@@ -29,10 +29,10 @@ defmodule ElixgrepTest do
   end
   
   test "build_paths returns correct values" do
-    {options,[ target | files ] } = Elixgrep.build_paths({%{:count => 1000},["fred","./test"]}) 
+    {options,[ target | files ] } = Elixgrep.build_paths({%{:count => 1000},["fred","./test_data"]}) 
     assert options.count == 1000
     assert target == "fred"
-    tfiles = ["./test/test_helper.exs", "./test/elixgrep_test.exs","./test/plugin_test.exs","./test/dirtree_test.exs"]
+    tfiles = ["./test_data/file1", "./test_data/file2","./test_data/subdir/file3"]
     assert Enum.sort(tfiles) == Enum.sort(files)
   end 
 
