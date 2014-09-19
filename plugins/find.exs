@@ -76,13 +76,12 @@ defmodule ElixgrepPlugin do
 
   def around(options,a,b) do 
     %{ delta: interval } = options
-    if(abs( a - b) < interval , do: true , else: false )
+    if(abs(a - b) < interval , do: true , else: false )
   end 
 
   def file_time(path,time_value) do
-    File.stat!(path)
+    File.stat!(path,[time: :posix])
     |> Map.get(time_value)
-    |> Date.from |> Date.convert(:secs)
   end 
 
 
