@@ -23,9 +23,10 @@ defmodule ElixgrepPlugin do
 
   def gr_map(options,path) do
     %{ search: string } = options 
+    match = Regex.compile!(string)
       File.stream!(path)
     |>
-      Stream.filter(fn(line) -> String.contains?(line,string) end )
+      Stream.filter(fn(line) -> Regex.match?(match,line) end )
     |> 
       Enum.map( fn(x) -> x end )
   end 

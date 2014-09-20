@@ -9,10 +9,9 @@ a function on many files and returning the results.
 
 Currently supports a simple string search in a list of files and directories. It will
 expand to search all regular files in the subtree of any directory you give it. It
-also has the ablity to load elixir code plugins to implement a general map/reduce. 
+also has the ablity to load elixir code plugins to implement a general map/reduce 
+(in the Hadoop sense). 
 
-A simple grep plugin that simply dupilicates the default functionality is included. 
-More plugins will be made available as time permits. 
 
 
 Usage
@@ -52,9 +51,42 @@ This program can easily drive the load on your machine to the number of availiab
 if you point it at a large enough set of files. If you do decide to use it on a production
 server, use the count option to limit it's use of resources.
 
+Plugins
+========
+
+There are currently two plugins available: 
+
+grep
+----
+     elixgrep -p grep [PCRE regexp] [files/directories]
+
+This plugin will list out all the files and lines that 
+match the regex, it only examines files one line per time
+so it won't match multiline regex.
+
+find
+----
+     elixgrep -p find --mtime target_file [verb] [files/directories]
+
+This plugin will search for files based on either their basename or 
+File.stat output. Currently it only supports `--atime, --ctime, --mtime`
+The verbs you can use with the stat options are 
+  -newer   Find files newer than the target file.
+  -older   Find files older than the target file.
+  -around  Find files that are within `--delta seconds` of the target file.
+           The default delta is 24 hours. 
+
+     elixgrep -p find [regex] [files/directories]
+
+Without any attribute arguements, the plugin uses the given regex
+to match against the basename of the files. 
+
+
 To Do
 =====
 
-Expand plugins to implement a basic find, tripwire, access monitoring, etc.. 
+Expand plugins to implement a tripwire, access monitoring, etc.. 
 
-Work on creating a plugin path discovery mechanism. 
+Work on creating a plugin path discovery mechanism.
+
+Figure out how plugins can implement plugin specific help.  
