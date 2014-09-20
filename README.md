@@ -70,11 +70,12 @@ find
 
 This plugin will search for files based on either their basename or 
 File.stat output. Currently it only supports `--atime, --ctime, --mtime`
-The verbs you can use with the stat options are 
+
+The verbs you can use with the stat options are:
+
 -newer   Find files newer than the target file.
 -older   Find files older than the target file.
--around  Find files that are within `--delta seconds` of the target file.
-           The default delta is 24 hours. 
+-around  Find files that are within `--delta seconds` of the target file. The default delta is 24 hours. 
 
      elixgrep -p find [regex] [files/directories]
 
