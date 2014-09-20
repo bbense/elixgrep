@@ -66,25 +66,35 @@ so it won't match multiline regex.
 
 find
 ----
-     elixgrep -p find --mtime target_file [verb] [files/directories]
 
 This plugin will search for files based on either their basename or 
-File.stat output. Currently it only supports `--atime, --ctime, --mtime`
+File.stat output.
 
-The verbs you can use with the stat options are:
-
-- newer   Find files newer than the target file.
-- older   Find files older than the target file.
-- around  Find files that are within `--delta seconds` of the target file. The default delta is 24 hours. 
-
-     elixgrep -p find [regex] [files/directories]
+    elixgrep -p find [regex] [files/directories]
 
 Without any attribute arguements, the plugin uses the given regex
 to match against the basename of the files. 
 
+     elixgrep -p find --mtime target_file [verb] [files/directories]
+
+You can use the keywords of the File.Stat structure as command line
+arguments and it will search on that attribute. Currently it only 
+supports the time values `--atime, --ctime, --mtime`
+
+The verbs you can use with the time stat options are:
+
+- `newer`   Find files newer than the target file.
+- `older`   Find files older than the target file.
+- `around`  Find files that are within `--delta seconds` of the target file. The default delta is 24 hours.   
+
+ 
 
 To Do
 =====
+
+Add other attributes/verbs to find plugin, Figure out how to use a 
+date string instead of target file in attributes. Add 1h30m type
+parsing to `--delta` option.ß
 
 Expand plugins to implement a tripwire, access monitoring, etc.. 
 
