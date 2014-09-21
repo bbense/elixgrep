@@ -1,6 +1,6 @@
 defmodule ElixgrepPlugin do
   
-  @module_doc """
+  @moduledoc """
     This is a test plugin that should work exactly the same as the default
     functions used in elixgrep. All plugins must send the :all_done_boss 
     message after finalization. These functions aren't map/reduce in the 
@@ -14,7 +14,7 @@ defmodule ElixgrepPlugin do
             gr_reduce(options)
 
           { :finalize } -> 
-            IO.puts("Singing off from grep plugin")
+            IO.puts("Signing off from grep plugin")
             send options.master_pid, { :all_done_boss }
             exit(:normal)
 

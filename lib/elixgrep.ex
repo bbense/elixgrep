@@ -1,6 +1,6 @@
 defmodule Elixgrep do
 
-  @module_doc """
+  @moduledoc """
       Usage:
         exilgrep [string] [files and/or directories]
  
@@ -92,7 +92,7 @@ defmodule Elixgrep do
   end 
   
   def build_paths(:help) do
-    IO.puts @module_doc
+    IO.puts @moduledoc
     System.halt(0)
   end
 
