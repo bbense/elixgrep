@@ -22,6 +22,9 @@ defmodule Plugin do
      List.first
   end 
 
+  @doc """
+    set_path is currently a noop placeholder.
+  """
   def set_path(path) do
     path
   end 
