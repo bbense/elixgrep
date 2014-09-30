@@ -6,20 +6,21 @@ defmodule ElixgrepPlugin do
   It also demonstrates how a plugin can use the wildcard command line options.
   The syntax is as follows 
 
-  --plugin find --atime file_or_parsable_time_string [verb] [paths or files]
+      --plugin find --atime file_or_parsable_time_string [verb] [paths or files]
   
   For time based attributes the verbs are older, newer, around 
-  The default range for around is 24hrs, use --delta seconds to change it. 
+  The default range for around is 24hrs, use `--delta seconds` to change it. 
   For now it just supports the time based parameters in File.Stat
-  [ atime, ctime, mtime ]
+      [ atime, ctime, mtime ]
 
   Without any additional arguments it assumes the verb is a string regexp
   and matchs the basename against the regexp. 
 
-  ToDo: Figure out how to have -h in the main program call help in the plugin. 
-  ToDo: Add parsable time string parsing.
-  ToDo: Add find style delta parsing
-     Possible time units are as follows:
+  * ToDo: Figure out how to have -h in the main program call help in the plugin. 
+  * ToDo: Add parsable time string parsing.
+  * ToDo: Add find style delta parsing
+
+         Possible time units are as follows:
 
              s       second
              m       minute (60 seconds)
@@ -27,7 +28,7 @@ defmodule ElixgrepPlugin do
              d       day (24 hours)
              w       week (7 days)
 
-             Any number of units may be combined in one --delta argument, for example, --delta 1h30m .  
+         Any number of units may be combined in one `--delta` argument, for example, `--delta 1h30m`.  
   """
 
   @default_delta 86400
