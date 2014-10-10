@@ -21,6 +21,8 @@ defmodule Elixgrep do
 
   @max_ofiles 512
 
+  require DirWalker
+
   def gr_reduce(options) do 
         receive do
           { :item, path, results } ->  
@@ -88,7 +90,7 @@ defmodule Elixgrep do
   end
 
   def build_paths({options,[head | tail]}) do  
-    {options,Enum.concat([ head ] ,DirTree.expand(tail))}
+    {options, [head,DirWalker.stream(tail)]}
   end 
   
   def build_paths(:help) do
@@ -112,7 +114,7 @@ defmodule Elixgrep do
   def process({options,[head | tail]}) do 
      tail
     |> 
-      Enum.chunk(options.count,options.count,[])
+      Stream.chunk(options.count,options.count,[])
     |>
       Enum.map(fn(filelist) -> Parallel.pmap(filelist, fn(path) -> process({options,[head,path]}) end ) end )
     send options.reduce_pid, { :finalize }

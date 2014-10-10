@@ -20,7 +20,7 @@ defmodule Elixgrep.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger ]]
   end
 
   # Dependencies can be Hex packages:
@@ -36,7 +36,7 @@ defmodule Elixgrep.Mixfile do
   def deps do
     [{:earmark, "~> 0.1", only: :dev},
      {:timex, "~> 0.12.7"},
-     {:dir_walk, git: "git@github.com:bbense/dir_walker.git" },
+     {:dir_walker, git: "git@github.com:bbense/dir_walker.git" },
      {:ex_doc, "~> 0.5", only: :dev}]
   end
 end
