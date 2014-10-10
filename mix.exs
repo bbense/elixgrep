@@ -36,6 +36,7 @@ defmodule Elixgrep.Mixfile do
   def deps do
     [{:earmark, "~> 0.1", only: :dev},
      {:timex, "~> 0.12.7"},
+     {:dir_walk, git: "git@github.com:bbense/dir_walker.git" },
      {:ex_doc, "~> 0.5", only: :dev}]
   end
 end
