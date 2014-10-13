@@ -90,7 +90,7 @@ defmodule Elixgrep do
   end
 
   def build_paths({options,[head | tail]}) do  
-    {options, [head,DirWalker.stream(tail)]}
+    {options, Enum.concat([ head ],DirWalker.stream(tail))}
   end 
   
   def build_paths(:help) do

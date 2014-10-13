@@ -3,12 +3,14 @@ defmodule Elixgrep.Mixfile do
 
   def project do
     [app: :elixgrep,
-     version: "0.1.0",
+     version: "0.2.0",
      elixir: "> 0.15.0",
      name: "elixgrep",
      source_url: "https://github.com/bbense/elixgrep",
      homepage_url: "https://github.com/bbense/elixgrep/wiki",
      escript: escript,
+     description: description,
+     package: package,
      deps: deps]
   end
 
@@ -35,8 +37,24 @@ defmodule Elixgrep.Mixfile do
  
   def deps do
     [{:earmark, "~> 0.1", only: :dev},
-     {:timex, "~> 0.12.7"},
      {:dir_walker, git: "git@github.com:bbense/dir_walker.git" },
      {:ex_doc, "~> 0.5", only: :dev}]
+  end
+
+  defp description do
+    """
+    A framework for doing Hadoop style map/reduce on lists of files/directories.
+    The initial list of plugins implements concurrent versions of the unix find
+    and grep utilities. 
+    """
+  end
+
+  defp package do
+    [# These are the default files included in the package
+     files: ["lib", "plugin", "mix.exs", "README*", "readme*", "LICENSE*"],
+     contributors: ["Booker Bense <bbense@gmail.com>"],
+     licenses: ["MIT"],
+     links: %{"GitHub" => "https://github.com/bbense/elixgrep",
+              "Docs" => "http://bbense.github.io/elixgrep/"}]
   end
 end

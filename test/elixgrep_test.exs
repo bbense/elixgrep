@@ -29,11 +29,9 @@ defmodule ElixgrepTest do
   end
   
   test "build_paths returns correct values" do
-    {options,[ target | file_names_stream ] } = Elixgrep.build_paths({%{:count => 1000},["fred","./test_data"]}) 
+    {options,[ target | stream ] } = Elixgrep.build_paths({%{:count => 1000},["fred","./test_data"]}) 
     assert options.count == 1000
     assert target == "fred"
-    # Assert file_names_stream is streamable?
-    [ stream ] = file_names_stream
     files = Enum.into(stream,[])
     tfiles = ["./test_data/file1","./test_data/file2","./test_data/subdir/file3"]
     assert Enum.sort(files) == Enum.sort(tfiles)

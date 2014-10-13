@@ -1,6 +1,5 @@
 defmodule ElixgrepPlugin do
-  use Timex
-
+  
   @moduledoc """
   This is a plugin to duplicate some of the functionality of the find command. 
   It also demonstrates how a plugin can use the wildcard command line options.
