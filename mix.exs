@@ -3,8 +3,8 @@ defmodule Elixgrep.Mixfile do
 
   def project do
     [app: :elixgrep,
-     version: "0.2.0",
-     elixir: "> 0.15.0",
+     version: "0.3.0",
+     elixir: "> 1.0.0",
      name: "elixgrep",
      source_url: "https://github.com/bbense/elixgrep",
      homepage_url: "https://github.com/bbense/elixgrep/wiki",
