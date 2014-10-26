@@ -42,7 +42,7 @@ defmodule FindPluginTest do
    assert [] == ElixgrepPlugin.gr_map(options,path)
   end
 
-  test "ElixgrepPlugin.gr_map around mtime succedes when target older" do
+  test "ElixgrepPlugin.gr_map around mtime succedes " do
    options = %{ search: "around" , mtime: "./test_data/file1" }
    path = "./test_data/file2"
    assert ["around"] == ElixgrepPlugin.gr_map(options,path)

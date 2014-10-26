@@ -19,7 +19,9 @@ defmodule Elixgrep do
                     { finalize: } -> Should output results and exit.
     """
 
-  @max_ofiles 512
+  @ofiles_per_core 8 
+
+  def processing_units, do: :erlang.system_info(:logical_processors)
 
   require DirWalker
 
@@ -58,7 +60,7 @@ defmodule Elixgrep do
   end 
 
   def parse_args(args) do
-    options = %{ :count => @max_ofiles ,
+    options = %{ :count => @ofiles_per_core * processing_units ,
                  :map_func => fn(opt,path) -> gr_map(opt,path) end ,
                  :reduce_func => fn(opt) -> gr_reduce(opt) end }
 
@@ -89,8 +91,10 @@ defmodule Elixgrep do
       List.first
   end
 
+  # Avoid expanding the stream. 
   def build_paths({options,[head | tail]}) do  
-    {options, Enum.concat([ head ],DirWalker.stream(tail))}
+     next_opts = options |> Map.put(:search,head)
+    { next_opts, DirWalker.stream(tail) }
   end 
   
   def build_paths(:help) do
@@ -98,25 +102,24 @@ defmodule Elixgrep do
     System.halt(0)
   end
 
-  def background({options,args}) do 
+  def background({options,filestream}) do 
     if(Map.has_key?(options,:plugin), do: next_opt = load_plugin(options), else: next_opt = options)
     reduce_opts = Map.put(next_opt,:master_pid,self()) 
     pid = start_reduce(reduce_opts)
-    {next_opt |> Map.put(:reduce_pid,pid), args }
+    {next_opt |> Map.put(:reduce_pid,pid), filestream }
   end
  
-  def process({options,[string,path]}) do
-    next_opts = options |> Map.put(:search,string)
-    send options.reduce_pid, { :item,path,next_opts.map_func.(next_opts,path) }
+  def process({options,[path]}) do
+    send options.reduce_pid, { :item,path,options.map_func.(options,path) }
     options
   end 
 
-  def process({options,[head | tail]}) do 
-     tail
+  def process({options,filestream}) do 
+     filestream
     |> 
       Stream.chunk(options.count,options.count,[])
     |>
-      Enum.map(fn(filelist) -> Parallel.pmap(filelist, fn(path) -> process({options,[head,path]}) end ) end )
+      Enum.map(fn(filelist) -> Parallel.pmap(filelist, fn(path) -> process({options,[path]}) end ) end )
     send options.reduce_pid, { :finalize }
   end 
   

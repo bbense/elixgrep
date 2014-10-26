@@ -12,7 +12,7 @@ defmodule ElixgrepTest do
 
   test "count is set to default w/o -c" do
     {opts,args} = Elixgrep.parse_args(["fred", "/tmp/bar", "/tmp/foo"]) 
-    assert opts.count ==  512
+    assert opts.count ==  8 * :erlang.system_info(:logical_processors)
     assert args == ["fred","/tmp/bar","/tmp/foo"] 
   end
   
@@ -29,10 +29,10 @@ defmodule ElixgrepTest do
   end
   
   test "build_paths returns correct values" do
-    {options,[ target | stream ] } = Elixgrep.build_paths({%{:count => 1000},["fred","./test_data"]}) 
+    {options, filestream } = Elixgrep.build_paths({%{:count => 1000},["fred","./test_data"]}) 
     assert options.count == 1000
-    assert target == "fred"
-    files = Enum.into(stream,[])
+    assert options.search == "fred"
+    files = Enum.to_list(filestream)
     tfiles = ["./test_data/file1","./test_data/file2","./test_data/subdir/file3"]
     assert Enum.sort(files) == Enum.sort(tfiles)
   end 
