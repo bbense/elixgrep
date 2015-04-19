@@ -1,4 +1,4 @@
-defmodule ElixgrepPlugin do
+defmodule EgPlugin.Grep do
   
   @moduledoc """
     This is a test plugin that should work exactly the same as the default

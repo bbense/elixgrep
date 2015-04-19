@@ -1,8 +1,12 @@
 defmodule FindPluginTest do
   use ExUnit.Case
 
+  setup_all do
+     {:ok, test_plugin } = Pluginator.load_with_signature("find",[gr_map: 2],["./plugins"])
+     {:ok, test_plugin: test_plugin }
+  end 
+
   setup do
-     Plugin.load("find")
      File.touch("test_data/file1")
   end 
    
@@ -18,40 +22,40 @@ defmodule FindPluginTest do
   
   # This should really be two nested enums on ["mtime","ctime","atime"]
   # and ["newer","older","around"]
-  test "ElixgrepPlugin.gr_map newer mtime fails when target older" do
+  test "EgPlugin.Find.gr_map newer mtime fails when target older", context do
    options = %{ search: "newer" , mtime: "./test_data/file1" }
    path = "./test_data/file2"
-   assert [] == ElixgrepPlugin.gr_map(options,path)
+   assert [] == context[:test_plugin].gr_map(options,path)
   end
 
-  test "ElixgrepPlugin.gr_map newer mtime succedes when target newer" do
+  test "EgPlugin.Find.gr_map newer mtime succedes when target newer", context do
    options = %{ search: "newer" , mtime: "./test_data/file2" }
    path = "./test_data/file1"
-   assert ["newer"] == ElixgrepPlugin.gr_map(options,path)
+   assert ["newer"] == context[:test_plugin].gr_map(options,path)
   end
 
-  test "ElixgrepPlugin.gr_map older mtime succedes when target older" do
+  test "EgPlugin.Find.gr_map older mtime succedes when target older", context do
    options = %{ search: "older" , mtime: "./test_data/file1" }
    path = "./test_data/file2"
-   assert ["older"] == ElixgrepPlugin.gr_map(options,path)
+   assert ["older"] == context[:test_plugin].gr_map(options,path)
   end
 
-  test "ElixgrepPlugin.gr_map older time fails when target older" do
+  test "EgPlugin.Find.gr_map older time fails when target older", context do
    options = %{ search: "older" , mtime: "./test_data/file2" }
    path = "./test_data/file1"
-   assert [] == ElixgrepPlugin.gr_map(options,path)
+   assert [] == context[:test_plugin].gr_map(options,path)
   end
 
-  test "ElixgrepPlugin.gr_map around mtime succedes " do
+  test "EgPlugin.Find.gr_map around mtime succedes ", context do
    options = %{ search: "around" , mtime: "./test_data/file1" }
    path = "./test_data/file2"
-   assert ["around"] == ElixgrepPlugin.gr_map(options,path)
+   assert ["around"] == context[:test_plugin].gr_map(options,path)
   end
 
-  test "ElixgrepPlugin.gr_map can search names via regexp" do
+  test "EgPlugin.Find.gr_map can search names via regexp", context do
    options = %{ search: "file.*"  }
    path = "./test_data/file2"
-   assert ["file.*"] == ElixgrepPlugin.gr_map(options,path)
+   assert ["file.*"] == context[:test_plugin].gr_map(options,path)
   end
 
   

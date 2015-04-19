@@ -1,4 +1,4 @@
-defmodule ElixgrepPlugin do
+defmodule EgPlugin.Find do
   
   @moduledoc """
   This is a plugin to duplicate some of the functionality of the find command. 
