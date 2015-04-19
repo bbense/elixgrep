@@ -20,6 +20,8 @@ defmodule Elixgrep do
     """
 
   @ofiles_per_core 8 
+  @plugin_path ["./plugins"]
+  @plugin_funcs [gr_reduce: 1, gr_map: 2]
 
   def processing_units, do: :erlang.system_info(:logical_processors)
 
@@ -139,11 +141,12 @@ defmodule Elixgrep do
     end 
   end 
 
+  # Will fail with match error, which is sub-optimal
   def load_plugin(options) do
-    Plugin.load(options.plugin)
+    {:ok, plugin } = Pluginator.load_with_signature(options.plugin,@plugin_funcs,@plugin_path)
     new_opts = %{ 
-                 :map_func => fn(opt,path) -> ElixgrepPlugin.gr_map(opt,path) end ,
-                 :reduce_func => fn(opt) -> ElixgrepPlugin.gr_reduce(opt) end }
+                 :map_func => fn(opt,path) -> plugin.gr_map(opt,path) end ,
+                 :reduce_func => fn(opt) -> plugin.gr_reduce(opt) end }
     Map.merge(options,new_opts)
   end
 
