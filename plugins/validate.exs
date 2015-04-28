@@ -41,7 +41,14 @@ defmodule EgPlugin.Validate do
   loop in gr_reduce. 
   """
   def gr_map(options,path) do
-    
+      # 4096 and :sha256 should be options.
+      File.stream!(path,[],4096) 
+     |> 
+      Enum.reduce(:crypto.hash_init(:sha256),fn(line, acc) -> acc = :crypto.hash_update(acc,line) end ) 
+     |> 
+      :crypto.hash_final 
+     |> 
+      Base.encode16
   end
 
   
