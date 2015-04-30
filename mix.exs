@@ -37,7 +37,7 @@ defmodule Elixgrep.Mixfile do
  
   def deps do
     [{:earmark, "~> 0.1", only: :dev},
-     {:benchfella, "~> 0.2", only: :dev},
+     {:benchfella, git: "https://github.com/alco/benchfella.git", only: :dev},
      {:dir_walker, git: "https://github.com/bbense/dir_walker.git" },
      {:pluginator, git: "https://github.com/bbense/pluginator.git" },
      {:ex_doc, "~> 0.5", only: :dev}]
