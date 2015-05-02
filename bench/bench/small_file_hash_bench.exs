@@ -1,4 +1,4 @@
-defmodule BenchHash do
+defmodule SmallFileHash do
   use Benchfella
 
   
