@@ -6,21 +6,21 @@ defmodule BenchHash do
   for chunk <- @lengths do 
    	@chunk chunk 
     bench "Hash 2**24 file by #{Integer.to_string(@chunk)}" do
-      0..9 |> Enum.map( fn(_) -> hash_test("./bench/data_2_24",@chunk) end )
+      hash_test("./bench/data_2_24",@chunk) 
     end
   end 
 
   for chunk <- @lengths do 
     @chunk chunk 
     bench "Hash 2**26 file by #{Integer.to_string(@chunk)}" do
-      0..9 |> Enum.map( fn(_) -> hash_test("./bench/data_2_26",@chunk) end )
+      hash_test("./bench/data_2_26",@chunk)
     end
   end 
 
   for chunk <- @lengths do 
     @chunk chunk 
     bench "Hash 2**28 file by #{Integer.to_string(@chunk)}" do
-      0..9 |> Enum.map( fn(_) -> hash_test("./bench/data_2_28",@chunk) end )
+      hash_test("./bench/data_2_28",@chunk)
     end
   end 
 
