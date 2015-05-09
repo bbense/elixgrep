@@ -5,12 +5,12 @@ defmodule EgPlugin.Validate do
   of known checksums. 
   The syntax is as follows 
 
-      --plugin validate --first --checksum file [paths or files]
+      --plugin validate --first --hashfile file [paths or files]
   
     ToDo: Add options for checksum and salt. 
   """
 
-  @chunk_size 
+  @chunk_size 262144
 
   @doc """
   The gr_reduce function collects the results of applying gr_map to each file. 
@@ -43,35 +43,47 @@ defmodule EgPlugin.Validate do
   pathlist. It should return the type expected in results in the recieve
   loop in gr_reduce. 
   """
-  def gr_map(options,path) do
+  def gr_map(options, path) do
       # Benchmarking shows 2**20 is significantly faster on large files.
       # Effectively slurps whole thing for small files. However for small 
       # files hash_simple is roughly 2x faster. 
       size = file_size(path)
-      case size < @chunk do 
-        true -> hash_simple(path)
-        _    -> hash_chunk(path,@chunk)
+      case size < @chunk_size do 
+        true -> hash_simple(options, path)
+        _    -> hash_chunk(options, path, @chunk_size)
       end 
       
   end
 
-  defp hash_chunk(file,chunk) do
-   File.stream!(file,[],chunk) 
+  defp hash_chunk(_,file, chunk) do
+   File.stream!(file, [], chunk) 
    |> 
-    Enum.reduce(:crypto.hash_init(:sha256),fn(line, acc) -> acc = :crypto.hash_update(acc,line) end ) 
+    Enum.reduce(:crypto.hash_init(:sha256), fn(line, acc) -> :crypto.hash_update(acc, line) end ) 
    |> 
     :crypto.hash_final 
    |> 
     Base.encode16 
   end 
 
-  defp hash_simple(file) do 
+  defp hash_simple(_,file) do 
     :crypto.hash(:sha256,File.read!(file)) |> Base.encode16 
   end
 
   def file_size(path) do
-    File.stat!(path,[time: :posix])
+    File.stat!(path, [time: :posix])
     |> Map.get(:size)
+  end 
+
+  defp initialize(options) do
+    options
+  end 
+  
+  defp finalize(options) do
+    options 
+  end 
+
+  defp process(path,results) do
+    { path, results } 
   end 
 
 end 
