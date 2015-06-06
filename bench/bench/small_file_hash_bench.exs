@@ -1,20 +1,21 @@
-defmodule SmallFileHash do
+defmodule SmallFileBenchHash do
+
   use Benchfella
 
   
   bench "Hash small file with chunk size larger than file" do
-      0..9 |> Enum.map( fn(_) -> hash_chunk("./bench/small_file",32000) end )
+     hash_chunk("./bench/small_file",32000) 
   end
   
   bench "Hash small file with with simple read" do
-      0..9 |> Enum.map( fn(_) -> hash_simple("./bench/small_file") end )
+       hash_simple("./bench/small_file")
   end
   
 
   def hash_chunk(file,chunk) do
    File.stream!(file,[],chunk) 
    |> 
-    Enum.reduce(:crypto.hash_init(:sha256),fn(line, acc) -> acc = :crypto.hash_update(acc,line) end ) 
+    Enum.reduce(:crypto.hash_init(:sha256),fn(line, acc) -> :crypto.hash_update(acc,line) end ) 
    |> 
     :crypto.hash_final 
    |> 
