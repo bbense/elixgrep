@@ -34,19 +34,19 @@ defmodule Elixgrep.Mixfile do
   #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
   #
   # Type `mix help deps` for more examples and options
- 
+
   def deps do
-    [{:earmark, "~> 0.1", only: :dev},
+    [{:earmark, "~> 1.0", only: :dev},
      {:dir_walker, git: "https://github.com/bbense/dir_walker.git" },
      {:pluginator, git: "https://github.com/bbense/pluginator.git" },
-     {:ex_doc, "~> 0.5", only: :dev}]
+     {:ex_doc, "~> 0.14", only: :dev}]
   end
 
   defp description do
     """
     A framework for doing Hadoop style map/reduce on lists of files/directories.
     The initial list of plugins implements concurrent versions of the unix find
-    and grep utilities. 
+    and grep utilities.
     """
   end
 
