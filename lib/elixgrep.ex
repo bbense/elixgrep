@@ -42,11 +42,10 @@ defmodule Elixgrep do
 
   def gr_map(options,path) do
     %{ search: string } = options
-      File.stream!(path)
-    |>
-      Stream.filter(fn(line) -> String.contains?(line,string) end )
-    |>
-      Enum.map( fn(x) -> x end )
+
+    File.stream!(path)
+    |> Stream.filter(fn(line) -> String.contains?(line,string) end )
+    |> Enum.map( fn(x) -> x end )
   end
 
   def start_reduce(options) do
@@ -80,17 +79,12 @@ defmodule Elixgrep do
   end
 
   def rehabilitate_args(bad_args) do
-      bad_args
-     |>
-      Enum.flat_map(fn(x) -> Tuple.to_list(x) end)
-     |>
-      Enum.filter_map(fn(str) -> str end, fn(str) -> String.replace(str, ~r/^\-([^-]+)/, "--\\1") end )
-     |>
-      OptionParser.parse
-     |>
-      Tuple.to_list
-     |>
-      List.first
+    bad_args
+    |> Enum.flat_map(fn(x) -> Tuple.to_list(x) end)
+    |> Enum.filter_map(fn(str) -> str end, fn(str) -> String.replace(str, ~r/^\-([^-]+)/, "--\\1") end )
+    |> OptionParser.parse
+    |> Tuple.to_list
+    |> List.first
   end
 
   # Avoid expanding the stream.
@@ -124,6 +118,7 @@ defmodule Elixgrep do
     filestream
     |> Stream.chunk(options.count,options.count,[])
     |> Enum.map(fn(filelist) -> Parallel.pmap(filelist, fn(path) -> process({options,[path]}) end ) end )
+
     send options.reduce_pid, { :finalize }
   end
 
